@@ -34,49 +34,181 @@
         th {
             background-color: #4CAF50;
             color: white;
+            cursor: pointer;
         }
 
         tr:nth-child(even) {
             background-color: #f2f2f2;
+        }
+
+        .pagination {
+            margin-top: 20px;
+        }
+
+        .pagination button {
+            padding: 10px 20px;
+            margin: 0 5px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .search-bar {
+            margin-top: 20px;
+        }
+
+        .search-bar input {
+            padding: 10px;
+            width: 300px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>日報一覧</h1>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="検索..." oninput="filterReports()">
+        </div>
         <table>
             <thead>
                 <tr>
-                    <th>名前</th>
-                    <th>利用者名</th>
-                    <th>業務内容</th>
-                    <th>業務の詳細</th>
-                    <th>業務開始日</th>
-                    <th>業務開始時間</th>
-                    <th>業務終了時間</th>
+                    <th onclick="sortTable(0)">名前</th>
+                    <th onclick="sortTable(1)">利用者名</th>
+                    <th onclick="sortTable(2)">業務内容</th>
+                    <th onclick="sortTable(3)">業務の詳細</th>
+                    <th onclick="sortTable(4)">業務開始日</th>
+                    <th onclick="sortTable(5)">業務開始時間</th>
+                    <th onclick="sortTable(6)">業務終了時間</th>
+                    <th>操作</th>
                 </tr>
             </thead>
             <tbody id="reportList">
                 <!-- 日報データがここに挿入されます -->
             </tbody>
         </table>
+        <div class="pagination">
+            <button onclick="prevPage()">前へ</button>
+            <span id="pageInfo"></span>
+            <button onclick="nextPage()">次へ</button>
+        </div>
     </div>
 
     <script>
+        let currentPage = 1;
+        const reportsPerPage = 10;
+        let reportsData = [];
+        let sortOrder = 1;
+
         document.addEventListener('DOMContentLoaded', function() {
             google.script.run.withSuccessHandler(function(data) {
-                var reportList = document.getElementById('reportList');
-                data.forEach(function(report) {
-                    var row = document.createElement('tr');
-                    report.forEach(function(cell) {
-                        var cellElement = document.createElement('td');
-                        cellElement.textContent = cell;
-                        row.appendChild(cellElement);
-                    });
-                    reportList.appendChild(row);
-                });
+                reportsData = data;
+                renderTable();
             }).getDailyReports();
         });
+
+        function renderTable() {
+            const reportList = document.getElementById('reportList');
+            reportList.innerHTML = '';
+            const start = (currentPage - 1) * reportsPerPage;
+            const end = start + reportsPerPage;
+            const currentReports = reportsData.slice(start, end);
+
+            currentReports.forEach(function(report, index) {
+                const row = document.createElement('tr');
+                report.forEach(function(cell) {
+                    const cellElement = document.createElement('td');
+                    cellElement.textContent = cell;
+                    row.appendChild(cellElement);
+                });
+
+                const actionCell = document.createElement('td');
+                const editButton = document.createElement('button');
+                editButton.textContent = '編集';
+                editButton.onclick = function() {
+                    editReport(start + index);
+                };
+                actionCell.appendChild(editButton);
+
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = '削除';
+                deleteButton.onclick = function() {
+                    deleteReport(start + index);
+                };
+                actionCell.appendChild(deleteButton);
+
+                row.appendChild(actionCell);
+                reportList.appendChild(row);
+            });
+
+            document.getElementById('pageInfo').textContent = `ページ ${currentPage} / ${Math.ceil(reportsData.length / reportsPerPage)}`;
+        }
+
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderTable();
+            }
+        }
+
+        function nextPage() {
+            if (currentPage * reportsPerPage < reportsData.length) {
+                currentPage++;
+                renderTable();
+            }
+        }
+
+        function filterReports() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            reportsData = reportsData.filter(function(report) {
+                return report.some(function(cell) {
+                    return cell.toString().toLowerCase().includes(searchInput);
+                });
+            });
+            currentPage = 1;
+            renderTable();
+        }
+
+        function sortTable(columnIndex) {
+            reportsData.sort(function(a, b) {
+                const cellA = a[columnIndex].toString().toLowerCase();
+                const cellB = b[columnIndex].toString().toLowerCase();
+                if (cellA < cellB) return -1 * sortOrder;
+                if (cellA > cellB) return 1 * sortOrder;
+                return 0;
+            });
+            sortOrder *= -1;
+            renderTable();
+        }
+
+        function editReport(index) {
+            const report = reportsData[index];
+            const updatedReport = prompt('編集内容を入力してください:', report.join(', '));
+            if (updatedReport) {
+                const updatedReportArray = updatedReport.split(', ');
+                google.script.run.withSuccessHandler(function() {
+                    refreshTable();
+                }).editReport(index, updatedReportArray);
+            }
+        }
+
+        function deleteReport(index) {
+            if (confirm('本当に削除しますか？')) {
+                google.script.run.withSuccessHandler(function() {
+                    refreshTable();
+                }).deleteReport(index);
+            }
+        }
+
+        function refreshTable() {
+            google.script.run.withSuccessHandler(function(data) {
+                reportsData = data;
+                renderTable();
+            }).getDailyReports();
+        }
     </script>
 </body>
 </html>
