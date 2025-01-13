@@ -51,4 +51,3 @@ function findUsers(input) {
     return filteredUsers;
 }
 
-

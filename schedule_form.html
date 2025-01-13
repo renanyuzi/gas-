@@ -211,6 +211,10 @@ function updateUserList(users, input) {
                 <input type="checkbox" name="tasks" value="公共手続き代行" onchange="checkFormValidity()">公共手続き代行<br>
                 <input type="checkbox" name="tasks" value="緊急搬送対応" onchange="checkFormValidity()">緊急搬送対応<br>
                 <input type="checkbox" name="tasks" value="支払い代行" onchange="checkFormValidity()">支払い代行<br>
+                <input type="checkbox" name="tasks" value="生活費お届け" onchange="checkFormValidity()">生活費お届け<br>
+                <input type="checkbox" name="tasks" value="施設手続き代行" onchange="checkFormValidity()">施設手続き代行<br>
+                <input type="checkbox" name="tasks" value="荷物受け取り・発送代行" onchange="checkFormValidity()">荷物受け取り・発送代行<br>
+                <input type="checkbox" name="tasks" value="病院手続き代行" onchange="checkFormValidity()">病院手続き代行<br>
                 <input type="checkbox" id="others" name="others" value="その他" onclick="showTextbox()">その他<br>
                 <div id="othersText" style="display:none;">
                     <label for="otherTasks">その他の業務内容：</label>
@@ -225,7 +229,7 @@ function updateUserList(users, input) {
             <input type="date" name="startDate" id="startDate" required onchange="checkFormValidity()">
 
             <label for="startTime">業務開始時間：</label>
-            <input type="time" name="startTime" id="startTime" required onchange="checkFormValidity()">
+            <input type="time" name="startTime" id="startTime" required onchange="checkFormValidity(); setEndTime()">
 
             <label for="endTime">業務終了時間：</label>
             <input type="time" name="endTime" id="endTime" required onchange="checkFormValidity()">
@@ -236,5 +240,24 @@ function updateUserList(users, input) {
         </form>
         <div id="output"></div>
     </div>
+
+<script>
+function setEndTime() {
+    var startTimeInput = document.getElementById('startTime');
+    var endTimeInput = document.getElementById('endTime');
+    var taskCheckbox = document.querySelector('input[name="tasks"][value="生活費お届け"]');
+
+    if (taskCheckbox.checked) {
+        var startTime = startTimeInput.value;
+        if (startTime) {
+            var startTimeDate = new Date('1970-01-01T' + startTime + 'Z');
+            startTimeDate.setHours(startTimeDate.getHours() + 1);
+            var endTime = startTimeDate.toISOString().substr(11, 5);
+            endTimeInput.value = endTime;
+        }
+    }
+}
+</script>
+
 </body>
 </html>
