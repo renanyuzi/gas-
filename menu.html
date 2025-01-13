@@ -32,13 +32,35 @@
             cursor: pointer;
             border-radius: 8px;
         }
+
+        iframe {
+            width: 100%;
+            height: 80vh;
+            border: none;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>メニュー</h1>
-        <a href="schedule_form.html" class="button">業務日報</a>
-        <a href="daily_report_list.html" class="button">日報一覧</a>
+        <button class="button" onclick="showScheduleForm()">業務日報</button>
+        <button class="button" onclick="showDailyReportList()">日報一覧</button>
+        <iframe id="contentFrame"></iframe>
     </div>
+
+    <script>
+        function showScheduleForm() {
+            google.script.run.withSuccessHandler(function(html) {
+                document.getElementById('contentFrame').srcdoc = html;
+            }).getFormPage();
+        }
+
+        function showDailyReportList() {
+            google.script.run.withSuccessHandler(function(html) {
+                document.getElementById('contentFrame').srcdoc = html;
+            }).getDailyReportListPage();
+        }
+    </script>
 </body>
 </html>
