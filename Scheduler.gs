@@ -52,3 +52,7 @@ function findUsers(input) {
 function getMenuPage() {
     return HtmlService.createHtmlOutputFromFile('menu').getContent();
 }
+
+function getDailyReportListPage() {
+    return HtmlService.createHtmlOutputFromFile('daily_report_list').getContent();
+}
