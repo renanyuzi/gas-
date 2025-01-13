@@ -1,5 +1,5 @@
 function doGet(e) {
-    var htmlOutput = HtmlService.createHtmlOutputFromFile('schedule_form')
+    var htmlOutput = HtmlService.createHtmlOutputFromFile('menu')
         .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
     htmlOutput.addMetaTag('viewport', 'width=device-width, initial-scale=1');
     return htmlOutput;
@@ -30,8 +30,6 @@ function processForm(formObject) {
     return HtmlService.createHtmlOutputFromFile('success').getContent();
 }
 
-
-
 function getFormPage() {
     return HtmlService.createHtmlOutputFromFile('schedule_form').getContent();
 }
@@ -51,3 +49,6 @@ function findUsers(input) {
     return filteredUsers;
 }
 
+function getMenuPage() {
+    return HtmlService.createHtmlOutputFromFile('menu').getContent();
+}
