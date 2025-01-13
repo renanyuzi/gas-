@@ -3,83 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <title>業務日報</title>
-<style>
-/* ベースのスタイル設定 */
-body {
-  font-family: Arial, sans-serif;
-  padding: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  margin: 0;
-  background-color: #f4f4f4; /* 背景色を明るい灰色に設定 */
-}
-
-h1 {
-  color: #2a5d84; /* ヘッダーの色を青系に設定 */
-  text-align: center;
-  font-size: 24px;
-}
-
-form {
-  background: #f0f8ff; /* フォームの背景色を淡い青に設定 */
-  padding: 20px;
-  border-radius: 8px;
-  width: 300px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-label {
-  display: block;
-  margin: 10px 0 5px;
-}
-
-select, input[type="text"], textarea, input[type="date"], input[type="time"] {
-  background-color: white;
-  color: black;
-  width: 100%;
-  padding: 8px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-}
-
-input[type="checkbox"] {
-  margin-right: 5px;
-}
-
-/* 送信ボタンのスタイル */
-.input-button {
-    background-color: #ccc; /* デフォルトの背景色（無効時） */
-    color: black;
-    border: none;
-    padding: 10px 20px;
-    text-align: center;
-    display: block;
-    width: 100%;
-    box-sizing: border-box;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 4px;
-    margin-top: 10px;
-}
-
-.input-button.enabled {
-    background-color: #4CAF50; /* 有効時の背景色 */
-    color: white;
-}
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div>
+        <h1>業務日報</h1>
+        <form id="myForm">
+            <label for="name">名前：</label>
+            <select name="name" id="name" required onchange="checkFormValidity()">
+                <option value="" selected>選択してください</option>
+                <option value="寺園">寺園</option>
+                <option value="坂野">坂野</option>
+                <option value="タカラ">タカラ</option>
+                <option value="稲垣">稲垣</option>
+            </select>
+            
+<label for="userNameInput">利用者名：</label>
+<input type="text" name="userNameInput" id="userNameInput" required oninput="searchUsers(this.value)" autocomplete="off">
+<div id="suggestions" style="position: relative;">
+  <ul id="userList" style="list-style: none; padding: 0; margin-top: 0; position: absolute; width: 100%; background: white; box-shadow: 0px 4px 6px rgba(0,0,0,0.1); z-index: 1000;"></ul>
+</div>
 
 
-#output {
-  margin-top: 20px;
-  padding: 10px;
-  color: green;
-  text-align: center;
-  font-size: 16px;
-}
 
-</style>
+
+            <label>業務内容：</label>
+            <div>
+                <input type="checkbox" name="tasks" value="買い物代行" onchange="checkFormValidity()">買い物代行<br>
+                <input type="checkbox" name="tasks" value="病院同行" onchange="checkFormValidity()">病院同行<br>
+                <input type="checkbox" name="tasks" value="公共手続き代行" onchange="checkFormValidity()">公共手続き代行<br>
+                <input type="checkbox" name="tasks" value="緊急搬送対応" onchange="checkFormValidity()">緊急搬送対応<br>
+                <input type="checkbox" name="tasks" value="支払い代行" onchange="checkFormValidity()">支払い代行<br>
+                <input type="checkbox" name="tasks" value="生活費お届け" onchange="checkFormValidity()">生活費お届け<br>
+                <input type="checkbox" name="tasks" value="施設手続き代行" onchange="checkFormValidity()">施設手続き代行<br>
+                <input type="checkbox" name="tasks" value="荷物受け取り・発送代行" onchange="checkFormValidity()">荷物受け取り・発送代行<br>
+                <input type="checkbox" name="tasks" value="病院手続き代行" onchange="checkFormValidity()">病院手続き代行<br>
+                <input type="checkbox" id="others" name="others" value="その他" onclick="showTextbox()">その他<br>
+                <div id="othersText" style="display:none;">
+                    <label for="otherTasks">その他の業務内容：</label>
+                    <input type="text" name="otherTasks" id="otherTasks" oninput="checkFormValidity()">
+                </div>
+            </div>
+
+            <label for="details">業務の詳細：</label>
+            <textarea id="details" name="details" rows="4" style="width: 100%;" required oninput="checkFormValidity()"></textarea>
+
+            <label for="startDate">業務開始日：</label>
+            <input type="date" name="startDate" id="startDate" required onchange="checkFormValidity()">
+
+            <label for="startTime">業務開始時間：</label>
+            <input type="time" name="startTime" id="startTime" required onchange="checkFormValidity(); setEndTime()">
+
+            <label for="endTime">業務終了時間：</label>
+            <input type="time" name="endTime" id="endTime" required onchange="checkFormValidity()">
+            
+            <input type="button" value="送信" id="submitButton" class="input-button" onclick="submitForm()" disabled>
+
+
+        </form>
+        <div id="output"></div>
+    </div>
 
 <script>
 function submitForm() {
@@ -178,70 +161,6 @@ function updateUserList(users, input) {
     }
 }
 
-</script>
-
-
-</head>
-<body>
-    <div>
-        <h1>業務日報</h1>
-        <form id="myForm">
-            <label for="name">名前：</label>
-            <select name="name" id="name" required onchange="checkFormValidity()">
-                <option value="" selected>選択してください</option>
-                <option value="寺園">寺園</option>
-                <option value="坂野">坂野</option>
-                <option value="タカラ">タカラ</option>
-                <option value="稲垣">稲垣</option>
-            </select>
-            
-<label for="userNameInput">利用者名：</label>
-<input type="text" name="userNameInput" id="userNameInput" required oninput="searchUsers(this.value)" autocomplete="off">
-<div id="suggestions" style="position: relative;">
-  <ul id="userList" style="list-style: none; padding: 0; margin-top: 0; position: absolute; width: 100%; background: white; box-shadow: 0px 4px 6px rgba(0,0,0,0.1); z-index: 1000;"></ul>
-</div>
-
-
-
-
-            <label>業務内容：</label>
-            <div>
-                <input type="checkbox" name="tasks" value="買い物代行" onchange="checkFormValidity()">買い物代行<br>
-                <input type="checkbox" name="tasks" value="病院同行" onchange="checkFormValidity()">病院同行<br>
-                <input type="checkbox" name="tasks" value="公共手続き代行" onchange="checkFormValidity()">公共手続き代行<br>
-                <input type="checkbox" name="tasks" value="緊急搬送対応" onchange="checkFormValidity()">緊急搬送対応<br>
-                <input type="checkbox" name="tasks" value="支払い代行" onchange="checkFormValidity()">支払い代行<br>
-                <input type="checkbox" name="tasks" value="生活費お届け" onchange="checkFormValidity()">生活費お届け<br>
-                <input type="checkbox" name="tasks" value="施設手続き代行" onchange="checkFormValidity()">施設手続き代行<br>
-                <input type="checkbox" name="tasks" value="荷物受け取り・発送代行" onchange="checkFormValidity()">荷物受け取り・発送代行<br>
-                <input type="checkbox" name="tasks" value="病院手続き代行" onchange="checkFormValidity()">病院手続き代行<br>
-                <input type="checkbox" id="others" name="others" value="その他" onclick="showTextbox()">その他<br>
-                <div id="othersText" style="display:none;">
-                    <label for="otherTasks">その他の業務内容：</label>
-                    <input type="text" name="otherTasks" id="otherTasks" oninput="checkFormValidity()">
-                </div>
-            </div>
-
-            <label for="details">業務の詳細：</label>
-            <textarea id="details" name="details" rows="4" style="width: 100%;" required oninput="checkFormValidity()"></textarea>
-
-            <label for="startDate">業務開始日：</label>
-            <input type="date" name="startDate" id="startDate" required onchange="checkFormValidity()">
-
-            <label for="startTime">業務開始時間：</label>
-            <input type="time" name="startTime" id="startTime" required onchange="checkFormValidity(); setEndTime()">
-
-            <label for="endTime">業務終了時間：</label>
-            <input type="time" name="endTime" id="endTime" required onchange="checkFormValidity()">
-            
-            <input type="button" value="送信" id="submitButton" class="input-button" onclick="submitForm()" disabled>
-
-
-        </form>
-        <div id="output"></div>
-    </div>
-
-<script>
 function setEndTime() {
     var startTimeInput = document.getElementById('startTime');
     var endTimeInput = document.getElementById('endTime');
