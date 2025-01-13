@@ -53,13 +53,19 @@
         function showScheduleForm() {
             google.script.run.withSuccessHandler(function(html) {
                 document.getElementById('contentFrame').srcdoc = html;
+                hideMenu();
             }).getFormPage();
         }
 
         function showDailyReportList() {
             google.script.run.withSuccessHandler(function(html) {
                 document.getElementById('contentFrame').srcdoc = html;
+                hideMenu();
             }).getDailyReportListPage();
+        }
+
+        function hideMenu() {
+            document.querySelector('.container').style.display = 'none';
         }
     </script>
 </body>

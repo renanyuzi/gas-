@@ -56,3 +56,32 @@ function getMenuPage() {
 function getDailyReportListPage() {
     return HtmlService.createHtmlOutputFromFile('daily_report_list').getContent();
 }
+
+function getDailyReports() {
+    var ss = SpreadsheetApp.openById('1Gb-7YRGhWFvBm7j-vAETVG5R6xwWdByadmAHw19ofak');
+    var sheet = ss.getSheetByName('Sheet1');
+    var data = sheet.getDataRange().getValues();
+    var currentMonth = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM');
+    var filteredData = data.filter(function(row) {
+        var reportDate = Utilities.formatDate(new Date(row[4]), Session.getScriptTimeZone(), 'yyyy-MM');
+        return reportDate === currentMonth;
+    });
+    return filteredData;
+}
+
+function editReport(rowIndex, updatedReport) {
+    var ss = SpreadsheetApp.openById('1Gb-7YRGhWFvBm7j-vAETVG5R6xwWdByadmAHw19ofak');
+    var sheet = ss.getSheetByName('Sheet1');
+    var range = sheet.getRange(rowIndex + 1, 1, 1, sheet.getLastColumn());
+    range.setValues([updatedReport]);
+}
+
+function deleteReport(rowIndex) {
+    var ss = SpreadsheetApp.openById('1Gb-7YRGhWFvBm7j-vAETVG5R6xwWdByadmAHw19ofak');
+    var sheet = ss.getSheetByName('Sheet1');
+    sheet.deleteRow(rowIndex + 1);
+}
+
+function refreshDailyReports() {
+    return getDailyReports();
+}
