@@ -71,18 +71,18 @@
     <div class="container">
         <h1>日報一覧</h1>
         <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="検索..." oninput="filterReports()">
+            <input type="text" id="searchInput" placeholder="検索..." oninput="debouncedFilterReports()">
         </div>
         <table>
             <thead>
                 <tr>
-                    <th onclick="sortTable(0)">名前</th>
-                    <th onclick="sortTable(1)">利用者名</th>
-                    <th onclick="sortTable(2)">業務内容</th>
-                    <th onclick="sortTable(3)">業務の詳細</th>
-                    <th onclick="sortTable(4)">業務開始日</th>
-                    <th onclick="sortTable(5)">業務開始時間</th>
-                    <th onclick="sortTable(6)">業務終了時間</th>
+                    <th data-column="0">名前</th>
+                    <th data-column="1">利用者名</th>
+                    <th data-column="2">業務内容</th>
+                    <th data-column="3">業務の詳細</th>
+                    <th data-column="4">業務開始日</th>
+                    <th data-column="5">業務開始時間</th>
+                    <th data-column="6">業務終了時間</th>
                     <th>操作</th>
                 </tr>
             </thead>
@@ -91,9 +91,9 @@
             </tbody>
         </table>
         <div class="pagination">
-            <button onclick="prevPage()">前へ</button>
+            <button id="prevPageBtn">前へ</button>
             <span id="pageInfo"></span>
-            <button onclick="nextPage()">次へ</button>
+            <button id="nextPageBtn">次へ</button>
         </div>
     </div>
 
@@ -108,6 +108,14 @@
                 reportsData = data;
                 renderTable();
             }).getDailyReports();
+
+            document.getElementById('prevPageBtn').addEventListener('click', prevPage);
+            document.getElementById('nextPageBtn').addEventListener('click', nextPage);
+            document.querySelectorAll('th[data-column]').forEach(th => {
+                th.addEventListener('click', function() {
+                    sortTable(parseInt(this.getAttribute('data-column')));
+                });
+            });
         });
 
         function renderTable() {
@@ -128,16 +136,16 @@
                 const actionCell = document.createElement('td');
                 const editButton = document.createElement('button');
                 editButton.textContent = '編集';
-                editButton.onclick = function() {
+                editButton.addEventListener('click', function() {
                     editReport(start + index);
-                };
+                });
                 actionCell.appendChild(editButton);
 
                 const deleteButton = document.createElement('button');
                 deleteButton.textContent = '削除';
-                deleteButton.onclick = function() {
+                deleteButton.addEventListener('click', function() {
                     deleteReport(start + index);
-                };
+                });
                 actionCell.appendChild(deleteButton);
 
                 row.appendChild(actionCell);
@@ -209,6 +217,16 @@
                 renderTable();
             }).getDailyReports();
         }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+
+        const debouncedFilterReports = debounce(filterReports, 300);
     </script>
 </body>
 </html>
