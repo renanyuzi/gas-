@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>日報一覧</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>日報一覧</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>名前</th>
+                    <th>利用者名</th>
+                    <th>業務内容</th>
+                    <th>業務の詳細</th>
+                    <th>業務開始日</th>
+                    <th>業務開始時間</th>
+                    <th>業務終了時間</th>
+                </tr>
+            </thead>
+            <tbody id="reportList">
+                <!-- 日報データがここに挿入されます -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            google.script.run.withSuccessHandler(function(data) {
+                var reportList = document.getElementById('reportList');
+                data.forEach(function(report) {
+                    var row = document.createElement('tr');
+                    report.forEach(function(cell) {
+                        var cellElement = document.createElement('td');
+                        cellElement.textContent = cell;
+                        row.appendChild(cellElement);
+                    });
+                    reportList.appendChild(row);
+                });
+            }).getDailyReports();
+        });
+    </script>
+</body>
+</html>
