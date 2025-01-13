@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>送信成功</title>
+</head>
+<body>
+    <h1>データが送信されました。</h1>
+    <button onclick="returnToForm()">業務日報を続ける</button>
+
+    <script>
+    function returnToForm() {
+        window.location.href = 'schedule_form.html'; // 業務日報のHTMLファイル名に合わせてください
+    }
+    </script>
+</body>
+</html>
+
